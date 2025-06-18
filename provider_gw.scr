@@ -1,0 +1,19 @@
+:global findGatewayForMetric100 do={
+    :local targetMetric 100
+    :local routeInfo [/ip route find where distance=$targetMetric]
+    
+    :if ([:len $routeInfo] > 0) do={
+        :local firstRoute [:pick $routeInfo 0]
+        :local gateway [/ip route get $firstRoute value-name=gateway]
+        
+        :log info "Шлюз для метрики $targetMetric: $gateway"
+        :return $gateway
+    } else={
+        :log warning "Маршрут с метрикой $targetMetric не найден!"
+        :return ""
+    }
+}
+
+# Вызов функции и сохранение результата
+:global gatewayFor100 [$findGatewayForMetric100]
+/system/script/environment/set gatewayFor100 value=$gatewayFor100
