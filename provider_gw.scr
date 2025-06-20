@@ -1,3 +1,4 @@
+:log info "provider gateways update started"
 :global findGatewayForMetric100 do={
     :local targetMetric 100
     :local routeInfo [/ip route find where distance=$targetMetric]
@@ -17,4 +18,6 @@
 # Вызов функции и сохранение результата
 :global gatewayFor100 [$findGatewayForMetric100]
 /ip/route/set [find where dst-address=185.24.42.0/24] gateway=$gatewayFor100
+/ip/route/set [find where routing-table=direct] gateway=$gatewayFor100
+:log info "provider gateways updated"
 /system/script/environment/set gatewayFor100 value=$gatewayFor100
