@@ -1,4 +1,4 @@
-:local ttl 14400
+:local ttl 18000
 :local list direct
 :local url "https://raw.githubusercontent.com/apnagaev/dnsfilter/refs/heads/main/antifilter/mikrotik/direct.txt"
 /tool fetch http-method=get url=$url dst-path=direct.txt
@@ -6,12 +6,11 @@
 
 :foreach ip in=[:deserialize $content delimiter="\n"  from=dsv options=dsv.plain] do={
    :if ([:len $ip] > 0 && [:pick $ip 0 1] != "#" && $ip !="") do={
-    #:log info $ip
     :do {
         /ip firewall address-list add address=$ip timeout=$ttl list="direct-dns"
         :log info "$ip added"
     } on-error={
-        #:log warning "Failed to add "
+          /ip/firewall/address-list/set [find where address=$ip] timeout=$ttl
     }
 }
 }
