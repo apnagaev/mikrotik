@@ -1,16 +1,18 @@
-:local url "https://raw.githubusercontent.com/apnagaev/dnsfilter/refs/heads/main/antifilter/mikrotik/direct-list.rsc"
-:local listname "direct-list"
-:local filename ($listname . ".rsc ")
-:global gatewayFor100
+:local ttl 14400
+:local list direct
+:local url "https://raw.githubusercontent.com/apnagaev/dnsfilter/refs/heads/main/antifilter/mikrotik/direct.txt"
+/tool fetch http-method=get url=$url dst-path=direct.txt
+:local content [/file get direct.txt contents]
 
-
-/tool fetch http-method=get url=$url dst-path=$filename
-:delay 5s
-/ip/firewall/mangle/remove [find where comment=$listname] 
-#/ip firewall address-list remove [find where comment=$listname]
-/ip firewall address-list remove [find where list=$listname]
-/import file-name=$filename
-:delay 10s
-/ip/firewall/mangle/add comment=$listname  dst-address-list=$listname chain=prerouting action=route route-dst=$gatewayFor100
-/file/remove $filename
-:log info "New $listname added successfully"
+:foreach ip in=[:deserialize $content delimiter="\n"  from=dsv options=dsv.plain] do={
+   :if ([:len $ip] > 0 && [:pick $ip 0 1] != "#" && $ip !="") do={
+    #:log info $ip
+    :do {
+        /ip firewall address-list add address=$ip timeout=$ttl list="direct-dns"
+        :log info "$ip added"
+    } on-error={
+        #:log warning "Failed to add "
+    }
+}
+}
+:log info "direct routes update finished"
