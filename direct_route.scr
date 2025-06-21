@@ -1,8 +1,9 @@
 :local ttl 18000
 :local list direct
 :local url "https://raw.githubusercontent.com/apnagaev/dnsfilter/refs/heads/main/antifilter/mikrotik/direct.txt"
-/tool fetch http-method=get url=$url dst-path=direct.txt
-:local content [/file get direct.txt contents]
+:local path dr/direct.txt
+/tool fetch http-method=get url=$url dst-path=$path
+:local content [/file get $path contents]
 
 :foreach ip in=[:deserialize $content delimiter="\n"  from=dsv options=dsv.plain] do={
    :if ([:len $ip] > 0 && [:pick $ip 0 1] != "#" && $ip !="") do={
