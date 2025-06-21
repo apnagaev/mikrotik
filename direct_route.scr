@@ -1,11 +1,11 @@
 :local ttl 18000
 :local list direct
 :local url "https://raw.githubusercontent.com/apnagaev/dnsfilter/refs/heads/main/antifilter/mikrotik/direct.txt"
-:local path dr/direct.txt
-:do {
-     /tool fetch http-method=get url=$url dst-path=$path
+:local path flash/dr/addresses.txt
+    :do {
+/tool fetch http-method=get url=$url dst-path=$path
     } on-error={
-    :log info "restore offline direct routes"
+:log info "restore offline direct routes"
 }
 :local content [/file get $path contents]
 
