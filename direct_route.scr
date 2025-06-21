@@ -2,7 +2,11 @@
 :local list direct
 :local url "https://raw.githubusercontent.com/apnagaev/dnsfilter/refs/heads/main/antifilter/mikrotik/direct.txt"
 :local path dr/direct.txt
-/tool fetch http-method=get url=$url dst-path=$path
+:do {
+     /tool fetch http-method=get url=$url dst-path=$path
+    } on-error={
+    :log info "restore offline direct routes"
+}
 :local content [/file get $path contents]
 
 :foreach ip in=[:deserialize $content delimiter="\n"  from=dsv options=dsv.plain] do={
