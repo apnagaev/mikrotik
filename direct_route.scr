@@ -1,4 +1,6 @@
-:local ttl 605000
+delay 120
+
+:local ttl 18000
 :local list direct
 :local url "https://raw.githubusercontent.com/apnagaev/dnsfilter/refs/heads/main/antifilter/mikrotik/direct.txt"
 :local path flash/dr/addresses.txt
